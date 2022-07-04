@@ -3,6 +3,7 @@
 #
 # genhost - generate unused hostnames by randomly picking from a word list
 #
+set -euo pipefail
 
 readonly wordlist='wordlist'
 readonly domain=${GENHOST_DOMAIN:-example.com}
@@ -17,7 +18,7 @@ rand() {
 }
 
 # check for a positive integer argument
-if [[ -z $1 ]]; then
+if [[ $# -eq 0 ]]; then
 	printf 'Usage:\n'
 	printf '  genhost <integer>\n    Generate hostnames by randomly picking unused names from the wordlist\n'
 	printf '  genhost reuse <hostname>\n    Return a decommissioned hostname to the available pool\n'
@@ -29,6 +30,7 @@ else
 		# then remove the trailing empty element, if any:
 		#    http://mywiki.wooledge.org/BashFAQ/005#Handling_newlines_.28or_lack_thereof.29_at_the_end_of_a_file
 		unset lines n
+		n=0
 		while IFS= read -r 'lines[n++]'; do :; done < <(sed '/^#/d' "$wordlist")
 		[[ ${lines[n - 1]} ]] || unset -v 'lines[--n]'
 
